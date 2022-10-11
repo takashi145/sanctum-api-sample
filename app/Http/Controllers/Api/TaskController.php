@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +15,7 @@ class TaskController extends Controller
 
     public function __construct()
     {
+        // 作成者でないユーザーがきたら404エラー
         $this->middleware(function ($request, $next) {
             $task = $request->route()->parameter('task');
             if($request->user()->isNot($task->user)) {
@@ -24,6 +26,7 @@ class TaskController extends Controller
             return $next($request);
         })->except('index', 'store');
     }
+    
     /**
      * Display a listing of the resource.
      *
@@ -32,7 +35,7 @@ class TaskController extends Controller
     public function index()
     {
         $tasks = Auth::user()->tasks()->get(); // ログインしているユーザーのタスクを取得
-        return response()->json(['tasks' => $tasks], Response::HTTP_OK);
+        return TaskResource::collection($tasks);
     }
 
     /**
@@ -43,13 +46,11 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        $task = Task::create([
-            'user_id' => Auth::id(),
-            'title' => $request->title,
-            'description' => $request->description,
-        ]);
+        $task = Auth::user()
+            ->tasks()
+            ->create($request->all());
 
-        return response()->json(['task' => $task], Response::HTTP_CREATED);
+        return new TaskResource($task);
     }
 
     /**
@@ -60,7 +61,7 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        return response()->json(['task' => $task], Response::HTTP_OK);
+        return new TaskResource($task);
     }
 
     /**
@@ -76,7 +77,7 @@ class TaskController extends Controller
         $task->description = $request->description;
         $task->save();
         
-        return response()->json(['task' => $task], Response::HTTP_OK);
+        return new TaskResource($task);
     }
 
     /**
