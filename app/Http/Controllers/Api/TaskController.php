@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
@@ -71,6 +72,6 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         $task->delete();
-        return Response::HTTP_NO_CONTENT;
+        return response()->noContent();
     }
 }
