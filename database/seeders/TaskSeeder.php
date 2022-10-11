@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use DateTime;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -17,16 +18,25 @@ class TaskSeeder extends Seeder
     {
         DB::table('tasks')->insert([
             [
+                'user_id' => 1,
                 'title' => 'test1',
-                'description' => 'testtesttest'
+                'description' => 'testtesttest',
+                'created_at' => new DateTime(),
+                'updated_at' => new DateTime(),
             ],
             [
+                'user_id' => 2,
                 'title' => 'test2',
-                'description' => 'testtesttest'
+                'description' => 'testtesttest',
+                'created_at' => new DateTime(),
+                'updated_at' => new DateTime(),
             ],
             [
+                'user_id' => 3,
                 'title' => 'test3',
-                'description' => 'testtesttest'
+                'description' => 'testtesttest',
+                'created_at' => new DateTime(),
+                'updated_at' => new DateTime(),
             ],
         ]);
     }

@@ -7,6 +7,7 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -17,7 +18,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        return response()->json(['tasks' => Task::all()], Response::HTTP_OK);
+        return response()->json(['tasks' => Auth::user()->tasks()->get()], Response::HTTP_OK);
     }
 
     /**
@@ -29,6 +30,7 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request)
     {
         $task = Task::create([
+            'user_id' => Auth::id(),
             'title' => $request->title,
             'description' => $request->description,
         ]);
