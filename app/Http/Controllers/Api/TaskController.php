@@ -11,6 +11,19 @@ use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $task = $request->route()->parameter('task');
+            if($request->user()->isNot($task->user)) {
+                return response()->json([
+                    'message' => 'Not Found'
+                ], Response::HTTP_NOT_FOUND);
+            }
+            return $next($request);
+        })->except('index', 'store');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +31,8 @@ class TaskController extends Controller
      */
     public function index()
     {
-        return response()->json(['tasks' => Auth::user()->tasks()->get()], Response::HTTP_OK);
+        $tasks = Auth::user()->tasks()->get(); // ログインしているユーザーのタスクを取得
+        return response()->json(['tasks' => $tasks], Response::HTTP_OK);
     }
 
     /**
