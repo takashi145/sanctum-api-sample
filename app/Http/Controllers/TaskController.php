@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
+use Illuminate\Http\Response;
 
 class TaskController extends Controller
 {
@@ -15,17 +16,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        return response()->json(['tasks' => Task::all()], 200);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return response()->json(['tasks' => Task::all()], Response::HTTP_OK);
     }
 
     /**
@@ -41,7 +32,7 @@ class TaskController extends Controller
             'description' => $request->description,
         ]);
 
-        return response()->json(['task' => $task], 201);
+        return response()->json(['task' => $task], Response::HTTP_CREATED);
     }
 
     /**
@@ -52,18 +43,7 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        return response()->json(['task' => $task], 200);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Task $task)
-    {
-        return response()->json(['task' => $task], 200);
+        return response()->json(['task' => $task], Response::HTTP_OK);
     }
 
     /**
@@ -79,7 +59,7 @@ class TaskController extends Controller
         $task->description = $request->description;
         $task->save();
         
-        return response()->json(['task' => $task], 200);
+        return response()->json(['task' => $task], Response::HTTP_OK);
     }
 
     /**
@@ -91,6 +71,6 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         $task->delete();
-        return response()->json([], 204);
+        return Response::HTTP_NO_CONTENT;
     }
 }
