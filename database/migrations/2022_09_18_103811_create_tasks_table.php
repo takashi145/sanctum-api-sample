@@ -18,8 +18,9 @@ return new class extends Migration
             $table->foreignId('user_id')
             ->constrained('users')
             ->onDelete('cascade');
-            $table->string('title')->comment('タイトル');
-            $table->string('description')->nullable()->comment('詳細');
+            $table->string('title');
+            $table->string('description')->nullable();
+            $table->boolean('completed')->default(0);
             $table->timestamps();
         });
     }
