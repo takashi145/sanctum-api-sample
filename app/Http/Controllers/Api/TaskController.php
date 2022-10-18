@@ -34,7 +34,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Auth::user()->tasks()->get(); // ログインしているユーザーのタスクを取得
+        $tasks = Auth::user()->tasks()->get();
         return TaskResource::collection($tasks);
     }
 

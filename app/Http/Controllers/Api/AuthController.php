@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginUserRequest;
+use App\Http\Requests\RegisterUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -12,48 +14,18 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function register(Request $request) {
-        $validated = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:50'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'password_confirmation' => ['required']
-        ]);
-
-        if($validated->fails()) {
-            return response()->json([
-                'errors' => $validated->messages()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
+    public function register(RegisterUserRequest $request) {
         $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password'])
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password'])
         ]);
 
-        $token = $user->createToken('token-name');
-
-        return response()->json([
-            'token' => $token->plainTextToken,
-        ], Response::HTTP_CREATED);
+        return response()->json($user, Response::HTTP_CREATED);
     }
 
-    public function login(Request $request) {
-
-        $credentials = Validator::make($request->all(), [
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
-
-        if($credentials->fails()) {
-            return response()->json([
-                'errors' => $credentials->messages()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-
-        if(Auth::attempt($request->all())) {
+    public function login(LoginUserRequest $request) {
+        if(Auth::attempt($request->only(['email', 'password']))) {
             $token = $request->user()->createToken('token-name');
 
             return response()->json([
@@ -70,6 +42,5 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
         return response()->noContent();
     }
-
 
 }

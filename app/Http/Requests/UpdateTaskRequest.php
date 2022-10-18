@@ -40,12 +40,4 @@ class UpdateTaskRequest extends FormRequest
             'description.max:200' => '詳細は200文字以内で入力してください。'
         ];
     }
-
-    protected function failedValidation(Validator $validator)
-    {
-        $response['errors'] = $validator->errors()->toArray();
-        throw new HttpResponseException(
-            response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY), 
-        );
-    }
 }
