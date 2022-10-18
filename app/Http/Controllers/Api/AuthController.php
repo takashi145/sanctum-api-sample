@@ -9,8 +9,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -25,12 +25,15 @@ class AuthController extends Controller
     }
 
     public function login(LoginUserRequest $request) {
+        
         if(Auth::attempt($request->only(['email', 'password']))) {
-            $token = $request->user()->createToken('token-name');
+            $token = $request->user()->createToken('token-name')->plainTextToken;
+
+            $cookie = cookie('jwt', $token, 60 * 24);
 
             return response()->json([
-                'token' => $token->plainTextToken,
-            ], Response::HTTP_OK);
+                'jwt' => $token,
+            ], Response::HTTP_OK)->withCookie($cookie);
         }
 
         return response()->json([
@@ -38,9 +41,9 @@ class AuthController extends Controller
         ], Response::HTTP_UNAUTHORIZED);
     }
 
-    public function logout(Request $request) {
-        $request->user()->currentAccessToken()->delete();
-        return response()->noContent();
+    public function logout() {
+        $cookie = Cookie::forget('jwt');
+        return response()->noContent()->withCookie($cookie);
     }
 
 }
