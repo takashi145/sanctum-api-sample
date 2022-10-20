@@ -8,7 +8,6 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
@@ -45,7 +44,7 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request)
     {
         $task = Auth::user()->tasks()
-            ->create($request->only('title', 'description', 'completed'));
+            ->create($request->only('title', 'description', 'completed', 'deadline'));
 
         return new TaskResource($task);
     }
@@ -70,11 +69,7 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        $task->title = $request->title;
-        $task->description = $request->description;
-        $task->completed = $request->status;
-        $task->save();
-        
+        $task->update($request->only('title', 'description', 'completed', 'deadline'));
         return new TaskResource($task);
     }
 

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('description')->nullable();
             $table->boolean('completed')->default(0);
+            $table->dateTime('deadline')->nullabel();
             $table->timestamps();
         });
     }
