@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DeadlineApproachingController;
 use Illuminate\Support\Facades\Route;
 
 /*

@@ -12,13 +12,6 @@ use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
-
-    public function __construct()
-    {
-        // 作成者でないユーザーがきたら404
-        $this->middleware('author:task')->except('index', 'store');
-    }
-    
     /**
      * Display a listing of the resource.
      *
@@ -57,6 +50,7 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
+        $this->authorize($task);
         return new TaskResource($task);
     }
 
@@ -69,6 +63,7 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
+        $this->authorize($task);
         $task->update($request->only('title', 'description', 'completed', 'deadline'));
         return new TaskResource($task);
     }
@@ -81,6 +76,7 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
+        $this->authorize($task);
         $task->delete();
         return response()->noContent();
     }
