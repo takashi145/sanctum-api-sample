@@ -17,15 +17,7 @@ class TaskController extends Controller
     public function __construct()
     {
         // 作成者でないユーザーがきたら404
-        $this->middleware(function ($request, $next) {
-            $task = $request->route()->parameter('task');
-            if($request->user()->isNot($task->user)) {
-                return response()->json([
-                    'message' => 'Not Found'
-                ], Response::HTTP_NOT_FOUND);
-            }
-            return $next($request);
-        })->except('index', 'store');
+        $this->middleware('author:task')->except('index', 'store');
     }
     
     /**

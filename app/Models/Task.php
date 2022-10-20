@@ -30,10 +30,13 @@ class Task extends Model
 
     public function scopeStatus($query, $status)
     {
+        if(is_Null($status)) {
+            return;
+        }
+
         if($status == 0 || $status == 1) {
             return $query->where('completed', $status);
         }
-        return $query;
     }
 
     public function scopeOrderByUpdated($query, $sort)
