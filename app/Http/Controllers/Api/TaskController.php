@@ -7,6 +7,7 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,9 +33,14 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Auth::user()->tasks()->get();
+        $tasks = Auth::user()->tasks()
+        ->searchWord($request->keyword)
+        ->status($request->status)
+        ->orderByUpdated($request->sort ?? "asc")
+        ->paginate($request->limit);
+
         return TaskResource::collection($tasks);
     }
 
@@ -46,9 +52,8 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        $task = Auth::user()
-            ->tasks()
-            ->create($request->all());
+        $task = Auth::user()->tasks()
+            ->create($request->only('title', 'description', 'completed'));
 
         return new TaskResource($task);
     }
@@ -75,6 +80,7 @@ class TaskController extends Controller
     {
         $task->title = $request->title;
         $task->description = $request->description;
+        $task->completed = $request->status;
         $task->save();
         
         return new TaskResource($task);
