@@ -19,7 +19,7 @@ class TaskPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -44,7 +44,7 @@ class TaskPolicy
      */
     public function create(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -84,7 +84,7 @@ class TaskPolicy
      */
     public function restore(User $user, Task $task)
     {
-        //
+        return true;
     }
 
     /**
@@ -96,6 +96,6 @@ class TaskPolicy
      */
     public function forceDelete(User $user, Task $task)
     {
-        //
+        return true;
     }
 }

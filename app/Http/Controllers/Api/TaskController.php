@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->authorizeResource(Task::class);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -20,10 +25,11 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $tasks = Auth::user()->tasks()
-        ->searchWord($request->keyword)
-        ->status($request->status)
-        ->orderByUpdated($request->sort ?? "asc")
-        ->paginate($request->limit);
+            ->searchWord($request->query('keyword'))
+            ->completed($request->query('status'))
+            ->deadline($request->query('deadline'))
+            ->orderByUpdated($request->query('sort'))
+            ->paginate($request->query('limit'));
 
         return TaskResource::collection($tasks);
     }
@@ -50,7 +56,6 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        $this->authorize($task);
         return new TaskResource($task);
     }
 
@@ -63,7 +68,6 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        $this->authorize($task);
         $task->update($request->only('title', 'description', 'completed', 'deadline'));
         return new TaskResource($task);
     }
@@ -76,7 +80,6 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        $this->authorize($task);
         $task->delete();
         return response()->noContent();
     }

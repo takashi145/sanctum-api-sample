@@ -29,20 +29,41 @@ class Task extends Model
                     ->orWhere('description', 'like', '%'.$word.'%');
     }
 
-    public function scopeStatus($query, $status)
+    // タスクの状態が完了か未完了かで絞り込む
+    public function scopeCompleted($query, $status)
     {
-        if(is_Null($status)) {
-            return;
+        // 未完了タスク
+        if($status == 'yet') {
+            return $query->where('completed', 0);
         }
 
-        if($status == 0 || $status == 1) {
-            return $query->where('completed', $status);
+        // 完了タスク
+        if($status == 'done') {
+            return $query->where('completed', 1);
         }
+        return;
     }
 
+    // 更新日の古い順、新しい順で並べかえる
     public function scopeOrderByUpdated($query, $sort)
     {
-        return $query->orderBy('updated_at', $sort);
+        if($sort == 'asc') {
+            return $query->orderBy('updated_at', 'asc');
+        }
+        return $query->orderBy('updated_at', 'desc');
+    }
+
+    public function scopeDeadline($query, $deadline)
+    {
+        // 期限を過ぎたタスクのみに絞り込み
+        if($deadline == 'past') {
+            return $query->where('deadline', '<', now());
+        }
+        // 期限がまだ過ぎていないタスクのみに絞り込み
+        if($deadline == 'future') {
+            return $query->where('deadline', '>=', now());
+        }
+        return;
     }
 
 }
