@@ -12,11 +12,6 @@ use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
-
-    public function __construct()
-    {
-        $this->authorizeResource(Task::class);
-    }
     /**
      * Display a listing of the resource.
      *
@@ -28,6 +23,10 @@ class TaskController extends Controller
             ->searchWord($request->query('keyword'))
             ->completed($request->query('status'))
             ->deadline($request->query('deadline'))
+            ->betweenDate(
+                $request->query('start'),
+                $request->query('end')
+            )
             ->orderByUpdated($request->query('sort'))
             ->paginate($request->query('limit'));
 
@@ -56,6 +55,7 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
+        $this->authorize('view', $task);
         return new TaskResource($task);
     }
 
@@ -68,6 +68,7 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
+        $this->authorize('update', $task);
         $task->update($request->only('title', 'description', 'completed', 'deadline'));
         return new TaskResource($task);
     }
@@ -80,6 +81,7 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
+        $this->authorize('delete', $task);
         $task->delete();
         return response()->noContent();
     }

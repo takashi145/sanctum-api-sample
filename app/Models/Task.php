@@ -34,12 +34,11 @@ class Task extends Model
     {
         // 未完了タスク
         if($status == 'yet') {
-            return $query->where('completed', 0);
+            return $query->where('completed', false);
         }
-
         // 完了タスク
         if($status == 'done') {
-            return $query->where('completed', 1);
+            return $query->where('completed', true);
         }
         return;
     }
@@ -47,12 +46,13 @@ class Task extends Model
     // 更新日の古い順、新しい順で並べかえる
     public function scopeOrderByUpdated($query, $sort)
     {
-        if($sort == 'asc') {
-            return $query->orderBy('updated_at', 'asc');
+        if($sort == 'desc') {
+            return $query->orderBy('updated_at', 'desc');
         }
-        return $query->orderBy('updated_at', 'desc');
+        return;
     }
 
+    // 期限切れかそうでないかで絞り込む
     public function scopeDeadline($query, $deadline)
     {
         // 期限を過ぎたタスクのみに絞り込み
@@ -64,6 +64,22 @@ class Task extends Model
             return $query->where('deadline', '>=', now());
         }
         return;
+    }
+
+
+    // 期限日の範囲検索
+    public function scopeBetweenDate($query, $start, $end)
+    {
+        if(is_null($start) && is_null($end)) {
+            return;
+        }
+        if(is_null($start)) {
+            return $query->where('deadline', '<=', $end);
+        }
+        if(is_null($end)) {
+            return $query->where('deadline', '>=', $start);
+        }
+        return $query->whereBetween('deadline', [$start, $end]);
     }
 
 }
