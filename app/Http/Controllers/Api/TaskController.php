@@ -28,7 +28,7 @@ class TaskController extends Controller
                 $request->query('end')
             )
             ->orderByUpdated($request->query('sort'))
-            ->paginate($request->query('limit'));
+            ->paginate(50);
 
         return TaskResource::collection($tasks);
     }

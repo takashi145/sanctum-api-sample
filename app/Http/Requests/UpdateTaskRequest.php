@@ -29,16 +29,8 @@ class UpdateTaskRequest extends FormRequest
         return [
             'title' => ['required', 'max:50'],
             'description' => ['max:200'],
-            'deadline' => ['nullable', 'after:now']
-        ];
-    }
-
-    public function messages()
-    {
-        return [
-            'title.required' => 'タイトルは必須です。',
-            'title.max:50' => 'タイトルは50文字以内で入力してください。',
-            'description.max:200' => '詳細は200文字以内で入力してください。'
+            'completed' => ['boolean'],
+            'deadline' => ['required', 'after:now']
         ];
     }
 }
