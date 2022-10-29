@@ -7,30 +7,25 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('can:view,task')->only('show');
+        $this->middleware('can:update,task')->only('update');
+        $this->middleware('can:delete,task')->only('destroy');
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $tasks = Auth::user()->tasks()
-            ->searchWord($request->query('keyword'))
-            ->completed($request->query('status'))
-            ->deadline($request->query('deadline'))
-            ->betweenDate(
-                $request->query('start'),
-                $request->query('end')
-            )
-            ->orderByUpdated($request->query('sort'))
-            ->paginate(50);
-
-        return TaskResource::collection($tasks);
+        return TaskResource::collection(Auth::user()->tasks()->get());
     }
 
     /**
@@ -55,7 +50,6 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        $this->authorize('view', $task);
         return new TaskResource($task);
     }
 
@@ -68,7 +62,6 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        $this->authorize('update', $task);
         $task->update($request->only('title', 'description', 'completed', 'deadline'));
         return new TaskResource($task);
     }
@@ -81,7 +74,6 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        $this->authorize('delete', $task);
         $task->delete();
         return response()->noContent();
     }
